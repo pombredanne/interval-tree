@@ -13,9 +13,8 @@ tmtags
 ## VIM
 *.swp
 
-## PROJECT::GENERAL
-coverage
-rdoc
-pkg
-
-## PROJECT::SPECIFIC
+## PYTHON
+*.pyc
+build
+dist
+itree.egg-info
