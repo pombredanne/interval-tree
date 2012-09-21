@@ -1,3 +1,4 @@
+import bisect
 
 def uniq(meth):
     def _make_unique(*args, **kwargs):
@@ -8,11 +9,18 @@ def uniq(meth):
             history.add((interval.start, interval.stop))
             yield interval
     return _make_unique
-        
+
 
 class Tree:
     def __init__(self, ranges):
         self.ranges = ranges
+
+        points = set()
+        for interval in self.ranges:
+            points.add(interval.start)
+            points.add(interval.stop)
+        self.points = list(sorted(points))
+
         self.top_node = self.divide_intervals(self.ranges)
 
     def divide_intervals(self, intervals):
@@ -46,19 +54,15 @@ class Tree:
     @uniq
     def search_interval(self, first, last):
         seen_before = set()
-
-        #TODO: This is disgusting.  Really, stepping forward by one to
-        #make sure we have all of the intermediate intervals?  Whoa,
-        #O(k^n) is way bigger than the O(n lg n) search time implied
-        #by the term "tree".  Okay, fix this in version 0.0.1 maybe?
-
+        first = bisect.bisect_left(self.points, first)
+        last = bisect.bisect_right(self.points, last)
         for j in range(first, last):
-            for element in self.point_search(self.top_node, j):
+            for element in self.point_search(self.top_node, self.points[j]):
                 yield element
 
     def center(self, intervals):
         #TODO: A median finder will have much better performance
-        return sorted(intervals, key=lambda x:x.start)[len(intervals)/2].start
+        return sorted(intervals, key=lambda x:x.start)[(len(intervals))/2].start
 
     @uniq
     def point_search(self, node, point):

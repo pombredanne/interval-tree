@@ -40,7 +40,8 @@ class IntervalTreeTest(TestCase):
                              slice(1,4))
 
     def test_search_two_intervals_returns_one(self):
-        self.assertIntervals([(1,3), (3,5)], (3,9),
+        self.assertIntervals([(1,3), (3,5)], 
+                             (3,9),
                              [(3,5)])
 
     def test_search_three_intervals_return_two(self):
@@ -54,15 +55,15 @@ class IntervalTreeTest(TestCase):
                              [(3,5), (3,9), (4,8)])
 
     def assertIntervals(self, intervals, point, returns=None):
-        intervals = map(slice, intervals)
+        intervals = [slice(*i) for i in  intervals]
         if returns is None:
             returns = intervals
         else:
-            returns = map(slice, returns)
+            returns = [slice(*i) for i in returns]
         if isinstance(point, (tuple, list)):
             point = slice(*point)
         self.assertEquals(Tree(intervals).search(point),
-                          intervals)
+                          returns)
 
 
 class UniqueTest:
